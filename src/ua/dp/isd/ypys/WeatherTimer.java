@@ -29,8 +29,10 @@ public class WeatherTimer extends TimerTask
 
 		try
 		{
+			String current = ParsingUtil.getTemperature();
+			System.out.println("Update! " + current);
 			remoteViews.setTextViewText(R.id.temperature, Globals.TEMP_PREFIX
-					+ ParsingUtil.getTemperature() + Globals.TEMP_SUFFIX);
+					+ current + Globals.TEMP_SUFFIX);
 		}
 		catch (IOException e)
 		{
