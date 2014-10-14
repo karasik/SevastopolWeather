@@ -19,7 +19,6 @@ public class ParsingUtil
 	{
 		Document doc = Jsoup.connect(Globals.TEMP_URL).get();
 		String result = fetchTemperature(doc);
-		System.out.println(result);
 		return result;
 	}
 
@@ -28,19 +27,17 @@ public class ParsingUtil
 		Elements innerElements = element
 				.getElementsMatchingText(Globals.TEMP_SEARCH_TEXT);
 
-		int strSize = Integer.MAX_VALUE;
-		Element result = null;
 		for (Element e : innerElements)
 		{
-			if (e.text().length() < strSize)
+			if (e.tag().getName().equals("div"))
 			{
-				result = e;
-				strSize = e.text().length();
+				String html = e.html();
+				String[] data = html.split("<br>");
+				// Temperature
+				return data[4].split(":")[1].trim();
 			}
 		}
 
-		String inner = result.getElementsByTag("b").text();
-
-		return inner.substring(0, inner.indexOf(' '));
+		return "ERROR";
 	}
 }
