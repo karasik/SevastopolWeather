@@ -2,6 +2,6 @@
     android:initialLayout="@layout/main"
     android:minHeight="78dp"
     android:minWidth="78dp"
-    android:updatePeriodMillis="1000" >
+    android:updatePeriodMillis="1800" >
 
 </appwidget-provider>
