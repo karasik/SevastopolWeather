@@ -8,6 +8,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 
 public class WeatherWidgetProvider extends AppWidgetProvider
 {
@@ -19,24 +20,20 @@ public class WeatherWidgetProvider extends AppWidgetProvider
 	{
 		System.out.println("Call onUpdate");
 
-		AlarmManager alarmManager = (AlarmManager) context
-				.getSystemService(Context.ALARM_SERVICE);
-
-		Calendar time = Calendar.getInstance();
-		time.set(Calendar.MINUTE, 0);
-		time.set(Calendar.SECOND, 0);
-		time.set(Calendar.MILLISECOND, 0);
-
-		Intent intent = new Intent(context, WeatherUpdatingService.class);
-
 		if (service == null)
 		{
+			Intent intent = new Intent(context, WeatherUpdatingService.class);
 			service = PendingIntent.getService(context, 0, intent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
+
+			AlarmManager alarmManager = (AlarmManager) context
+					.getSystemService(Context.ALARM_SERVICE);
+		
+			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+					SystemClock.elapsedRealtime() + 100,
+					Globals.UPDATE_INTERVAL_MILLIS, service);
 		}
 
-		alarmManager.setRepeating(AlarmManager.RTC, time.getTime().getTime(),
-				Globals.UPDATE_INTERVAL_MILLIS, service);
 	}
 
 	@Override
@@ -44,9 +41,12 @@ public class WeatherWidgetProvider extends AppWidgetProvider
 	{
 		System.out.println("Call onDisabled");
 
-		final AlarmManager alarmManager = (AlarmManager) context
-				.getSystemService(Context.ALARM_SERVICE);
-
-		alarmManager.cancel(service);
+		if (service != null)
+		{
+			final AlarmManager alarmManager = (AlarmManager) context
+					.getSystemService(Context.ALARM_SERVICE);
+			
+			alarmManager.cancel(service);
+		}
 	}
 }
