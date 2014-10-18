@@ -1,35 +1,55 @@
 package ua.dp.isd.ypys;
 
-import ua.dp.isd.ypys.sevmeteo.R;
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import java.io.IOException;
 
-public class WeatherUpdatingService extends Service
+import ua.dp.isd.ypys.sevmeteo.R;
+import android.app.IntentService;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.graphics.Color;
+import android.widget.RemoteViews;
+
+public class WeatherUpdatingService extends IntentService
 {
 
-	@Override
-	public void onCreate()
+	public WeatherUpdatingService()
 	{
-		super.onCreate();
+		super("Sevmeteo Svc");
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
+	public void onHandleIntent(Intent intent)
 	{
-		updateView();
-		return super.onStartCommand(intent, flags, startId);
+//		System.out.print("IntentService requested...");
+
+		RemoteViews views = new RemoteViews(this.getPackageName(),
+											R.layout.main);
+
+		String currentTemperatureReadings = null;
+
+		try
+		{
+
+			currentTemperatureReadings = WeatherParsingUtil.getTemperature();
+
+			views.setTextViewText(R.id.temperature, currentTemperatureReadings);
+			views.setTextColor(R.id.temperature, Color.WHITE);
+
+		}
+		catch (IOException e)
+		{
+//			System.err.println("Error accessing URL: http://pda.sevmeteo.info");
+			views.setTextColor(R.id.temperature, Color.GRAY);
+		}
+
+//		System.out.println(currentTemperatureReadings);
+
+		AppWidgetManager manager = AppWidgetManager.getInstance(this);
+		ComponentName thisWidgetProvider =
+						new ComponentName(this, WeatherWidgetProvider.class);
+		manager.updateAppWidget(thisWidgetProvider, views);
+
 	}
 
-	@Override
-	public IBinder onBind(Intent intent)
-	{
-		return null;
-	}
-
-	private void updateView()
-	{
-		System.out.print("Updating...");
-		new UpdatingThread(this, R.layout.main, R.id.temperature).start();
-	}
 }

@@ -10,41 +10,60 @@ import android.os.SystemClock;
 
 public class WeatherWidgetProvider extends AppWidgetProvider
 {
-	private PendingIntent service = null;
+
+	@Override
+	public void onEnabled(Context context)
+	{
+
+//		System.out.println("Call onEnabled");
+
+		Intent intent = new Intent(context, WeatherUpdatingService.class);
+		PendingIntent serviceIntent = PendingIntent.getService(context, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		AlarmManager alarmManager = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+
+		alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+				SystemClock.elapsedRealtime() + 100,
+				Globals.UPDATE_INTERVAL_MILLIS, serviceIntent);
+
+	}
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds)
 	{
+
 		System.out.println("Call onUpdate");
-
-		if (service == null)
-		{
-			Intent intent = new Intent(context, WeatherUpdatingService.class);
-			service = PendingIntent.getService(context, 0, intent,
-					PendingIntent.FLAG_CANCEL_CURRENT);
-
-			AlarmManager alarmManager = (AlarmManager) context
-					.getSystemService(Context.ALARM_SERVICE);
-		
-			alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-					SystemClock.elapsedRealtime() + 100,
-					Globals.UPDATE_INTERVAL_MILLIS, service);
-		}
-
+		/*
+		 * 
+		 * if (serviceIntent == null) { Intent intent = new Intent(context,
+		 * WeatherUpdatingService.class); serviceIntent =
+		 * PendingIntent.getService(context, 0, intent,
+		 * PendingIntent.FLAG_CANCEL_CURRENT);
+		 * 
+		 * AlarmManager alarmManager = (AlarmManager) context
+		 * .getSystemService(Context.ALARM_SERVICE);
+		 * 
+		 * alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+		 * SystemClock.elapsedRealtime() + 100, Globals.UPDATE_INTERVAL_MILLIS,
+		 * serviceIntent); }
+		 */
 	}
 
 	@Override
 	public void onDisabled(Context context)
 	{
-		System.out.println("Call onDisabled");
+//		System.out.println("Call onDisabled");
 
-		if (service != null)
-		{
-			final AlarmManager alarmManager = (AlarmManager) context
-					.getSystemService(Context.ALARM_SERVICE);
-			
-			alarmManager.cancel(service);
-		}
+		Intent intent = new Intent(context, WeatherUpdatingService.class);
+		PendingIntent serviceIntent = PendingIntent.getService(context, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		AlarmManager alarmManager = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+
+		alarmManager.cancel(serviceIntent);
 	}
 }

@@ -46,7 +46,7 @@ public class UpdatingThread extends Thread
 		}
 		else
 		{
-			view.setTextColor(textView, Color.YELLOW);
+			view.setTextColor(textView, Color.GRAY);
 		}
 		ComponentName thisWidget = new ComponentName(parentService,
 				WeatherWidgetProvider.class);

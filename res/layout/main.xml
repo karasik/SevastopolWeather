@@ -15,7 +15,8 @@
         android:alpha="1.0"
         android:fontFamily="Verdana"
         android:gravity="center"
-        android:textColor="#FFFFFF"
+        android:shadowColor="#000000"
+        android:shadowRadius="10"
         android:textSize="14pt" />
 
 </LinearLayout>
